@@ -5,38 +5,30 @@ option(OSPRAY_MODULE_PIDX_PARTICLE "PIDX Particle module" OFF)
 option(OSPRAY_MODULE_PIDX_PARTICLE_WORKER "PIDX Particle worker" OFF)
 option(OSPRAY_MODULE_PIDX_PARTICLE_VIEWER "PIDX Particle remote viewer client" OFF)
 
-
 if (OSPRAY_MODULE_PIDX_PARTICLE)
 
   set(CMAKE_CXX_STANDARD 11)
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-  include_directories(
-    ${CMAKE_SOURCE_DIR}/apps/common
+  include_directories(${CMAKE_SOURCE_DIR}/apps/common
     ${CMAKE_SOURCE_DIR}/apps/exampleViewer
     ${CMAKE_SOURCE_DIR}/apps/exampleViewer/common/imgui)
   
   find_package(TurboJpeg REQUIRED)
-
   add_library(pidx_particle_app_util
     util.cpp
     image_util.cpp
     client_server.cpp
-    socket_fabric.cpp
-    )
+    socket_fabric.cpp)
   target_link_libraries(pidx_particle_app_util PUBLIC
     ospray
     ospray_common
-    ospray
-    TurboJpeg
-    )
+    TurboJpeg)
 
   if (OSPRAY_MODULE_PIDX_PARTICLE_WORKER)
-
-    include_directories(${MPI_CXX_INCLUDE_PATH} ${PIDX_INCLUDE_DIRS})
     find_package(PIDX REQUIRED)
     find_package(MPI REQUIRED)
-    
+    include_directories(${MPI_CXX_INCLUDE_PATH} ${PIDX_INCLUDE_DIRS})
     ospray_create_application(pidx_particle_render_worker
       pidx_particle_render_worker.cpp
       LINK
@@ -44,15 +36,12 @@ if (OSPRAY_MODULE_PIDX_PARTICLE)
       ospray
       ospray_common
       ospray_mpi_common
-      ospray
       ${PIDX_LIBRARIES}
       ${MPI_CXX_LIBRARIES}
-      TurboJpeg
-      )
-    
+      TurboJpeg)    
   endif()
-  if (OSPRAY_MODULE_PIDX_PARTICLE_VIEWER)
 
+  if (OSPRAY_MODULE_PIDX_PARTICLE_VIEWER)
     find_package(GLFW REQUIRED)
     include_directories(${GLFW_INCLUDE_DIRS})
     mark_as_advanced(GLFW_ROOT)
@@ -63,11 +52,11 @@ if (OSPRAY_MODULE_PIDX_PARTICLE)
       pidx_particle_app_util
       ${OPENGL_LIBRARIES}
       ${GLFW_LIBRARY}
-      ospray_imgui
       ospray
       ospray_common
-      ospray_imgui3d_sg
       ospray_sg
+      ospray_imgui
+      ospray_imgui3d_sg
       TurboJpeg)  
   endif()  
 
