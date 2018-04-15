@@ -17,8 +17,8 @@ To run the remote viewer first start the render workers on your compute nodes.
 
 ```bash
 mpirun -np <N> ./pidx_render_worker \
-       -dataset <dataset.idx> \
-       -port <port to listen on>
+       -port <port-to-listen-on>    \
+       -cosmicweb <N-datasets>
 ```
 
 These workers will start and load the data. Once they're ready to connect to
@@ -30,3 +30,9 @@ to connect to.
 ./pidx_viewer -server <rank 0 hostname> -port <port to connect>
 ```
 
+If the viewer cannot be connected to the worker, then try to create one ssh 
+tunnel first.
+
+```bash
+ssh user@remote.server.com -L <local-port>:localhost:<remote-port> -N
+```

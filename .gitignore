@@ -22,3 +22,5 @@ ospray-doc
 /modules/*
 !/modules/mpi
 !/modules/pluggableGeometryExample
+.DS_Store
+*/.DS_Store
