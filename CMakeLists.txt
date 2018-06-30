@@ -41,7 +41,7 @@ if (OSPRAY_MODULE_PIDX_PARTICLE)
   endif()
 
   if (OSPRAY_MODULE_PIDX_PARTICLE_VIEWER)
-    find_package(GLFW REQUIRED)
+    find_package(glfw3 REQUIRED)
     include_directories(${GLFW_INCLUDE_DIRS})
     mark_as_advanced(GLFW_ROOT)
     ospray_create_application(pidx_particle_viewer
