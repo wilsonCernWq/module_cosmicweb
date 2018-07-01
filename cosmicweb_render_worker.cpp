@@ -65,10 +65,10 @@ int main(int argc, char **argv) {
     }
   }
   if (cosmic_web_bricks.empty()) {
-    std::cout << "Usage: mpirun -np <N> ./pidx_render_worker [options]\n"
-      << "Options:\n"
-      << "-dataset <dataset.idx>\n"
-      << "-port <port>\n";
+    std::cout << "Usage: mpirun -np <N> ./cosmicweb_render_worker [options]\n"
+              << "Options:\n"
+              << "-port <port>\n"
+              << "-cosmicweb <dataset.idx>\n";
     return 1;
   }
 

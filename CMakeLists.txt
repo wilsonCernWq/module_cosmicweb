@@ -1,63 +1,110 @@
 cmake_minimum_required(VERSION 3.1)
-project(module_pidx_particle)
+project(module_cosmicweb)
 
-option(OSPRAY_MODULE_PIDX_PARTICLE "PIDX Particle module" OFF)
-option(OSPRAY_MODULE_PIDX_PARTICLE_WORKER "PIDX Particle worker" OFF)
-option(OSPRAY_MODULE_PIDX_PARTICLE_VIEWER "PIDX Particle remote viewer client" OFF)
+# ┌──────────────────────────────────────────────────────────────────┐
+# │  Options                                                         │
+# └──────────────────────────────────────────────────────────────────┘ 
+option(OSPRAY_MODULE_COSMICWEB "Cosmic Web module" OFF)
+option(OSPRAY_MODULE_COSMICWEB_WORKER "Cosmic Web rendering worker" OFF)
+option(OSPRAY_MODULE_COSMICWEB_VIEWER "Cosmic Web client viewer" OFF)
 
-if (OSPRAY_MODULE_PIDX_PARTICLE)
+if (OSPRAY_MODULE_COSMICWEB)
 
+  # ┌────────────────────────────────────────────────────────────────┐
+  # │  Configure CMake Globally                                      │
+  # └────────────────────────────────────────────────────────────────┘   
   set(CMAKE_CXX_STANDARD 11)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+  set(CMAKE_MODULE_PATH 
+    ${CMAKE_MODULE_PATH} 
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
-  include_directories(${CMAKE_SOURCE_DIR}/apps/common
-    ${CMAKE_SOURCE_DIR}/apps/exampleViewer
-    ${CMAKE_SOURCE_DIR}/apps/exampleViewer/common/imgui)
-  
+  # ┌────────────────────────────────────────────────────────────────┐
+  # │  Find Packages                                                 │
+  # └────────────────────────────────────────────────────────────────┘   
+  # Turbo-Jpeg
   find_package(TurboJpeg REQUIRED)
-  add_library(pidx_particle_app_util
-    util.cpp
-    image_util.cpp
-    client_server.cpp)
-  target_link_libraries(pidx_particle_app_util PUBLIC
-    ospray
-    ospray_common
-    TurboJpeg)
-
-  if (OSPRAY_MODULE_PIDX_PARTICLE_WORKER)
-    find_package(PIDX REQUIRED)
+  # MPI
+  if (OSPRAY_MODULE_COSMICWEB_WORKER)
     find_package(MPI REQUIRED)
-    include_directories(${MPI_CXX_INCLUDE_PATH} ${PIDX_INCLUDE_DIRS})
-    ospray_create_application(pidx_particle_render_worker
-      pidx_particle_render_worker.cpp
-      LINK
-      pidx_particle_app_util
-      ospray
-      ospray_common
-      ospray_mpi_common
-      ${PIDX_LIBRARIES}
-      ${MPI_CXX_LIBRARIES}
-      TurboJpeg)    
+    if (MPI_FOUND)
+      add_library(MPI INTERFACE IMPORTED)
+      set_target_properties(MPI PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${MPI_CXX_INCLUDE_PATH}"
+        INTERFACE_LINK_LIBRARIES "${MPI_CXX_LIBRARIES}")
+      if (MPI_CXX_COMPILE_FLAGS)
+        set_target_properties(MPI PROPERTIES 
+          INTERFACE_COMPILE_FLAGS "${MPI_CXX_COMPILE_FLAGS}")
+      endif (MPI_CXX_COMPILE_FLAGS)
+      if (MPI_CXX_LINK_FLAGS)
+        set_target_properties(MPI PROPERTIES 
+          INTERFACE_LINK_FLAGS "${MPI_CXX_LINK_FLAGS}")
+      endif (MPI_CXX_LINK_FLAGS)
+    endif()
   endif()
-
-  if (OSPRAY_MODULE_PIDX_PARTICLE_VIEWER)
+  # GLFW
+  if (OSPRAY_MODULE_COSMICWEB_VIEWER)
     if (NOT TARGET glfw)
       find_package(glfw3 REQUIRED)
     endif()
-    include_directories(${GLFW_INCLUDE_DIRS})
-    ospray_create_application(pidx_particle_viewer
-      pidx_particle_viewer.cpp
+    target_include_directories(glfw INTERFACE 
+      "$<BUILD_INTERFACE:${GLFW_INCLUDE_DIRS};>")
+  endif ()
+
+  # ┌────────────────────────────────────────────────────────────────┐
+  # │  Util Library                                                  │
+  # └────────────────────────────────────────────────────────────────┘     
+  add_library(cosmicweb_app_util
+    util.cpp
+    image_util.cpp
+    client_server.cpp)
+  target_link_libraries(cosmicweb_app_util PUBLIC
+    ospray
+    ospray_common
+    TurboJpeg)
+  target_include_directories(cosmicweb_app_util PUBLIC
+    "$<BUILD_INTERFACE:"
+    "${CMAKE_SOURCE_DIR}/apps/common;"
+    "${CMAKE_SOURCE_DIR}/apps/exampleViewer;"
+    "${CMAKE_SOURCE_DIR}/apps/exampleViewer/common/imgui;"
+    ">")
+
+  # ┌────────────────────────────────────────────────────────────────┐
+  # │  Render Worker                                                 │
+  # └────────────────────────────────────────────────────────────────┘     
+  if (OSPRAY_MODULE_COSMICWEB_WORKER)
+    ospray_create_application(cosmicweb_render_worker
+      cosmicweb_render_worker.cpp
+      LINK
+      # local
+      cosmicweb_app_util
+      # ospray
+      ospray
+      ospray_common
+      ospray_mpi_common
+      # extra
+      TurboJpeg
+      MPI)
+  endif()
+
+  # ┌────────────────────────────────────────────────────────────────┐
+  # │  Client Viewer                                                 │
+  # └────────────────────────────────────────────────────────────────┘     
+  if (OSPRAY_MODULE_COSMICWEB_VIEWER)
+    ospray_create_application(cosmicweb_viewer
+      cosmicweb_viewer.cpp
       arcball.cpp
       LINK
-      pidx_particle_app_util
-      TurboJpeg
-      glfw
-      ${OPENGL_LIBRARIES}
+      # local
+      cosmicweb_app_util
+      # ospray
       ospray
       ospray_common
       ospray_sg
       ospray_imgui
-      ospray_imgui3d_sg)
+      ospray_imgui3d_sg
+      # extra
+      TurboJpeg
+      glfw)
   endif()  
 
 endif()

@@ -123,7 +123,7 @@ int main(int argc, const char **argv)
     }
   }
   if (serverhost.empty() || port < 0) {
-    throw std::runtime_error("Usage: ./pidx_viewer -server <server host> -port <port>");
+    throw std::runtime_error("Usage: ./cosmicweb_viewer -server <server host> -port <port>");
   }
 
   AppState app;
@@ -136,7 +136,7 @@ int main(int argc, const char **argv)
     return 1;
   }
   GLFWwindow *window = glfwCreateWindow(app.fbSize.x, app.fbSize.y,
-      "PIDX Particle OSPRay Viewer", nullptr, nullptr);
+      "Cosmic Web OSPRay Viewer", nullptr, nullptr);
 
   if (!window) {
     glfwTerminate();
