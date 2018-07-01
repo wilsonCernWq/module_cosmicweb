@@ -209,8 +209,8 @@ int main(int argc, char **argv) {
     }
   }
   if (rank == 0) { client.reset(nullptr); }
-  MPI_Finalize();
   ospShutdown();
+  MPI_Finalize();
   return 0;
 }
 
