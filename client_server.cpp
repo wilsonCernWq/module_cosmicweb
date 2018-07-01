@@ -99,7 +99,8 @@ void ServerConnection::connection_thread() {
 }
 
 ClientConnection::ClientConnection(const int port)
-  : compressor(90), fabric("", port), read_stream(fabric), write_stream(fabric)
+  :
+  compressor(90), listener(port), fabric(listener.accept()), read_stream(fabric), write_stream(fabric)
 {}
 void ClientConnection::send_metadata(const ospcommon::box3f &world_bounds) {
   write_stream << world_bounds;
