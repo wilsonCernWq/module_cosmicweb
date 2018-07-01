@@ -41,22 +41,23 @@ if (OSPRAY_MODULE_PIDX_PARTICLE)
   endif()
 
   if (OSPRAY_MODULE_PIDX_PARTICLE_VIEWER)
-    find_package(glfw3 REQUIRED)
+    if (NOT TARGET glfw)
+      find_package(glfw3 REQUIRED)
+    endif()
     include_directories(${GLFW_INCLUDE_DIRS})
-    mark_as_advanced(GLFW_ROOT)
     ospray_create_application(pidx_particle_viewer
       pidx_particle_viewer.cpp
       arcball.cpp
       LINK
       pidx_particle_app_util
+      TurboJpeg
+      glfw
       ${OPENGL_LIBRARIES}
-      ${GLFW_LIBRARY}
       ospray
       ospray_common
       ospray_sg
       ospray_imgui
-      ospray_imgui3d_sg
-      TurboJpeg)  
+      ospray_imgui3d_sg)
   endif()  
 
 endif()
