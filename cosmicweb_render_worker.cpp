@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   MPI_Init_thread(&argc, &argv, MPI_THREAD_SINGLE, &provided);
 
   std::vector<FileName> cosmic_web_bricks;
-  bool cosmic_web = false;
+  // bool cosmic_web = false;
   AppState app;
   AppData appdata;
 
@@ -85,7 +85,8 @@ int main(int argc, char **argv) {
   char hostname[1024] = {0};
   gethostname(hostname, 1023);
   if (rank == 0) {
-    std::cout << "Now listening for client on " << hostname << ":" << port << std::endl;
+    std::cout << "Now listening for client on " 
+              << hostname << ":" << port << std::endl;
     client = ospcommon::make_unique<ClientConnection>(port);
   }
   MPI_Barrier(MPI_COMM_WORLD);
@@ -100,7 +101,7 @@ int main(int argc, char **argv) {
 
   const size_t bricks_per_rank = cosmic_web_bricks.size() / world_size;
   std::vector<Particle> particles;
-  for (int i = 0; i < bricks_per_rank; ++i) {
+  for (size_t i = 0; i < bricks_per_rank; ++i) {
     particles.clear();
     load_cosmic_web_test(cosmic_web_bricks[rank * bricks_per_rank + i],
         particles, local_bounds);
@@ -209,6 +210,7 @@ int main(int argc, char **argv) {
   }
   if (rank == 0) { client.reset(nullptr); }
   MPI_Finalize();
+  ospShutdown();
   return 0;
 }
 
