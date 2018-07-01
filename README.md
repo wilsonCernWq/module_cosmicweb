@@ -1,23 +1,25 @@
-# module\_pidx\_particle
+# module\_cosmicweb
 
-App for viewing pidx particle data.
+App for viewing cosmicweb particle data.
 
 ## Building
 
 Clone the repo into your OSPRay modules directory, then run CMake to build
-OSPRay and pass `-DOSPRAY_MODULE_PIDX_PARTICLE=ON` to build the module's movie
-renderer and render workers and `-DOSPRAY_MODULE_PIDX_PARTICLE_VIEWER=ON` to build
-the remote viewer client. PIDX and TurboJPEG 1.5.x+ are required, along
-with MPI. You can pass `-DTURBOJPEG_DIR` to the root directory of your
-TurboJPEG installation directory if it's not installed in a standard location.
+OSPRay and pass `-DOSPRAY_MODULE_COSMICWEB=ON` to build the module's core library,
+`-DOSPRAY_MODULE_COSMICWEB_WORKER=ON` to build the render workers and 
+`-DOSPRAY_MODULE_COSMICWEB_VIEWER=ON` to build the remote viewer client. 
+GLFW 3+ and TurboJPEG 1.5.x+ are required, along with MPI. 
+You can pass `-DTURBOJPEG_DIR` to the root directory of your
+TurboJPEG installation directory if TurboJpeg is not installed in a standard 
+location.
 
 ## Running the Remote Viewer
 
 To run the remote viewer first start the render workers on your compute nodes.
 
 ```bash
-mpirun -np <N> ./pidx_render_worker \
-       -port <port-to-listen-on>    \
+mpirun -np <N> ./cosmicweb_worker \
+       -port <port-to-listen-on>  \
        -cosmicweb <N-datasets>
 ```
 
@@ -27,7 +29,7 @@ can then start the viewer and pass it the hostname of rank 0 and the port
 to connect to.
 
 ```bash
-./pidx_viewer -server <rank 0 hostname> -port <port to connect>
+./cosmicweb_viewer -server <rank 0 hostname> -port <port to connect>
 ```
 
 If the viewer cannot be connected to the worker, then try to create one ssh 
