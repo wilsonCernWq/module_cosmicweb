@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
       app.fbSizeChanged = false;
     }
   }
-
+  if (rank == 0) { client.reset(nullptr); }
   MPI_Finalize();
   return 0;
 }

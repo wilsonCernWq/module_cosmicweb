@@ -4,7 +4,6 @@
 #include <set>
 #include <vector>
 #include "ospcommon/vec.h"
-//#include "PIDX.h"
 
 using vec3sz = ospcommon::vec_t<size_t, 3>;
 
@@ -52,16 +51,4 @@ std::array<int, 3> computeGhostFaces(const ospcommon::vec3i &brickId,
     const ospcommon::vec3i &grid);
 
 ospcommon::vec3f hsv_to_rgb(const float hue, const float sat, const float val);
-
-/* #define PIDX_CHECK(F) \ */
-/*   { \ */
-/*     PIDX_return_code rc = F; \ */
-/*     if (rc != PIDX_success) { \ */
-/*       const std::string er = "PIDX Error at " #F ": " + pidx_error_to_string(rc); \ */
-/*       std::cerr << er << std::endl; \ */
-/*       throw std::runtime_error(er); \ */
-/*     } \ */
-/*   } */
-
-/* std::string pidx_error_to_string(const PIDX_return_code rc); */
 
